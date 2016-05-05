@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.browsImage = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.imgPath_txt = new System.Windows.Forms.TextBox();
             this.ECBBtn = new System.Windows.Forms.Button();
             this.CBCBtn = new System.Windows.Forms.Button();
             this.CFBBtn = new System.Windows.Forms.Button();
@@ -41,6 +41,8 @@
             this.ChangeIVBtn = new System.Windows.Forms.Button();
             this.CloseBtn = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.keyLabel = new System.Windows.Forms.Label();
+            this.ivLable = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.OriginalPicBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EncryptedPicBox)).BeginInit();
             this.SuspendLayout();
@@ -55,13 +57,13 @@
             this.browsImage.UseVisualStyleBackColor = true;
             this.browsImage.Click += new System.EventHandler(this.button1_Click);
             // 
-            // textBox1
+            // imgPath_txt
             // 
-            this.textBox1.Location = new System.Drawing.Point(27, 45);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(602, 31);
-            this.textBox1.TabIndex = 1;
+            this.imgPath_txt.Location = new System.Drawing.Point(27, 45);
+            this.imgPath_txt.Multiline = true;
+            this.imgPath_txt.Name = "imgPath_txt";
+            this.imgPath_txt.Size = new System.Drawing.Size(602, 31);
+            this.imgPath_txt.TabIndex = 1;
             // 
             // ECBBtn
             // 
@@ -71,6 +73,7 @@
             this.ECBBtn.TabIndex = 2;
             this.ECBBtn.Text = "ECB Mode";
             this.ECBBtn.UseVisualStyleBackColor = true;
+            this.ECBBtn.Click += new System.EventHandler(this.ECBBtn_Click);
             // 
             // CBCBtn
             // 
@@ -136,6 +139,7 @@
             this.ChageKeyBtn.TabIndex = 2;
             this.ChageKeyBtn.Text = "Change Key";
             this.ChageKeyBtn.UseVisualStyleBackColor = true;
+            this.ChageKeyBtn.Click += new System.EventHandler(this.ChageKeyBtn_Click);
             // 
             // ChangeIVBtn
             // 
@@ -154,16 +158,37 @@
             this.CloseBtn.TabIndex = 2;
             this.CloseBtn.Text = "Close";
             this.CloseBtn.UseVisualStyleBackColor = true;
+            this.CloseBtn.Click += new System.EventHandler(this.CloseBtn_Click);
             // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // keyLabel
+            // 
+            this.keyLabel.AutoSize = true;
+            this.keyLabel.Location = new System.Drawing.Point(65, 446);
+            this.keyLabel.Name = "keyLabel";
+            this.keyLabel.Size = new System.Drawing.Size(28, 13);
+            this.keyLabel.TabIndex = 4;
+            this.keyLabel.Text = "key:";
+            // 
+            // ivLable
+            // 
+            this.ivLable.AutoSize = true;
+            this.ivLable.Location = new System.Drawing.Point(65, 479);
+            this.ivLable.Name = "ivLable";
+            this.ivLable.Size = new System.Drawing.Size(24, 13);
+            this.ivLable.TabIndex = 4;
+            this.ivLable.Text = "IV: ";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(848, 501);
+            this.Controls.Add(this.ivLable);
+            this.Controls.Add(this.keyLabel);
             this.Controls.Add(this.EncryptedPicBox);
             this.Controls.Add(this.OriginalPicBox);
             this.Controls.Add(this.CloseBtn);
@@ -174,10 +199,11 @@
             this.Controls.Add(this.CFBBtn);
             this.Controls.Add(this.CBCBtn);
             this.Controls.Add(this.ECBBtn);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.imgPath_txt);
             this.Controls.Add(this.browsImage);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.OriginalPicBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.EncryptedPicBox)).EndInit();
             this.ResumeLayout(false);
@@ -188,7 +214,7 @@
         #endregion
 
         private System.Windows.Forms.Button browsImage;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox imgPath_txt;
         private System.Windows.Forms.Button ECBBtn;
         private System.Windows.Forms.Button CBCBtn;
         private System.Windows.Forms.Button CFBBtn;
@@ -200,6 +226,8 @@
         private System.Windows.Forms.Button ChangeIVBtn;
         private System.Windows.Forms.Button CloseBtn;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Label keyLabel;
+        private System.Windows.Forms.Label ivLable;
     }
 }
 
