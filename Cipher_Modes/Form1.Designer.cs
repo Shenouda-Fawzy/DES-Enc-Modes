@@ -73,7 +73,7 @@
             this.ECBBtn.TabIndex = 2;
             this.ECBBtn.Text = "ECB Mode";
             this.ECBBtn.UseVisualStyleBackColor = true;
-            this.ECBBtn.Click += new System.EventHandler(this.ECBBtn_Click);
+            this.ECBBtn.Click += new System.EventHandler(this.checkButton);
             // 
             // CBCBtn
             // 
@@ -83,6 +83,7 @@
             this.CBCBtn.TabIndex = 2;
             this.CBCBtn.Text = "CBC Mode";
             this.CBCBtn.UseVisualStyleBackColor = true;
+            this.CBCBtn.Click += new System.EventHandler(this.checkButton);
             // 
             // CFBBtn
             // 
@@ -92,6 +93,7 @@
             this.CFBBtn.TabIndex = 2;
             this.CFBBtn.Text = "CFB Mode";
             this.CFBBtn.UseVisualStyleBackColor = true;
+            this.CFBBtn.Click += new System.EventHandler(this.checkButton);
             // 
             // OFBBtn
             // 
@@ -110,6 +112,7 @@
             this.CTRBtn.TabIndex = 2;
             this.CTRBtn.Text = "CTR Mode";
             this.CTRBtn.UseVisualStyleBackColor = true;
+            this.CTRBtn.Click += new System.EventHandler(this.CTRBtn_Click);
             // 
             // OriginalPicBox
             // 
@@ -149,6 +152,7 @@
             this.ChangeIVBtn.TabIndex = 2;
             this.ChangeIVBtn.Text = "Change IV";
             this.ChangeIVBtn.UseVisualStyleBackColor = true;
+            this.ChangeIVBtn.Click += new System.EventHandler(this.ChangeIVBtn_Click);
             // 
             // CloseBtn
             // 
