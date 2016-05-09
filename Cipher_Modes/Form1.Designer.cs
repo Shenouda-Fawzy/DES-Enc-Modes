@@ -103,6 +103,7 @@
             this.OFBBtn.TabIndex = 2;
             this.OFBBtn.Text = "OFB Mode";
             this.OFBBtn.UseVisualStyleBackColor = true;
+            this.OFBBtn.Click += new System.EventHandler(this.OFBBtn_Click);
             // 
             // CTRBtn
             // 

@@ -103,6 +103,7 @@ namespace Cipher_Modes
         private void checkButton(object sender, EventArgs arg) 
         {
 
+
             // 1. Convert the Bitmap Image to stream of byte im Memory to encrypt it.
             // 2. Set the block encryptoin mode.
             // 3. Split to [Header] and [Data].
@@ -112,6 +113,12 @@ namespace Cipher_Modes
             // -------------------------------------------------------------------------------------
 
             Button btn = (Button)sender; //Check which button is clicked.
+            if (OriginalPicBox.Image == null)
+            {
+                MessageBox.Show("Plz select and bitmap gray image");
+                return;
+            }
+            
             MemoryStream stream = new MemoryStream();
             OriginalPicBox.Image.Save(stream, ImageFormat.Bmp);
             //DESCryptoServiceProvider des = new DESCryptoServiceProvider();
@@ -230,6 +237,11 @@ namespace Cipher_Modes
 
         private void CTRBtn_Click(object sender, EventArgs e)
         {
+            if (OriginalPicBox.Image == null)
+            {
+                MessageBox.Show("Plz select and bitmap gray image");
+                return;
+            }
             CTRMode();
         }
 
@@ -238,6 +250,76 @@ namespace Cipher_Modes
             myIv = generateIV();
             iv = BitConverter.ToInt64(myIv, 0);
             this.ivLable.Text = "IV: " + iv;
+        }
+
+        private void OFBMode() 
+        {
+            // == FIRST BLOCK ==
+            // 1. Genrate IV
+            // 2. Z = ENC( IV , KEY )
+            // 3. CIPHER = Plain XOR Z
+            // == OTHER BLOCKS ==
+            // - Y = ENC(Z-1 , KEY)
+            // - CIPHER = Plain XOR Y
+            MemoryStream stream = new MemoryStream();
+            OriginalPicBox.Image.Save(stream, ImageFormat.Bmp);
+            byte[] imageHeader = stream.ToArray().Take(54).ToArray();
+            byte[] imageData = stream.ToArray().Skip(54).ToArray(); // Skip 54 byte then return the remaining.
+
+            byte[] dataBlock = new byte[8]; // 64-bit block
+            byte[] encryptedBlock = new byte[8]; // after encrypting the data.
+
+            int padding = 0;
+            if (dataBlock.Length % 8 != 0)
+                padding = 8 - (dataBlock.Length % 8);
+            List<byte> encryptedImg = new List<byte>(imageData.Length + padding);
+
+            byte[] IV = generateIV();
+            ICryptoTransform cryptor = des.CreateEncryptor(this.key, null);
+
+// Encrypt first block of data.
+            byte[] firstBlock = cryptor.TransformFinalBlock(IV, 0, IV.Length);
+            long firstB = BitConverter.ToInt64(firstBlock,0);
+            byte[] fristImgeDataBlock = stream.ToArray().Take(8).ToArray();
+            long firstImgB = BitConverter.ToInt64(fristImgeDataBlock, 0);
+            long firstEncBlock = firstB ^ firstImgB;
+            byte[] firstEncryptedBlock = BitConverter.GetBytes(firstEncBlock);
+
+// Add the first encrypted block.
+            encryptedImg.AddRange(firstEncryptedBlock);
+
+            int j = 0;
+            byte[] encBlock = firstBlock;
+            for (uint i = 8; i < imageData.Length - 8; i++)
+            {
+                dataBlock[j] = imageData[i];
+                
+                if (i % 7 == 0)
+                {
+                    long dataBlk = BitConverter.ToInt64(dataBlock, 0);
+                    cryptor.TransformBlock(encBlock, 0, encBlock.Length, encBlock, 0);
+                    long encryptedPrivBlock = BitConverter.ToInt64(encBlock , 0);
+                    long encryptedImageBlock = encryptedPrivBlock ^ dataBlk;
+                    byte[] encryptedDataBlock = BitConverter.GetBytes(encryptedImageBlock);
+                    encryptedImg.AddRange(encryptedDataBlock);
+                    j = 0;
+                }
+                j++;
+            } // end of loop
+            byte[] image = Combine(imageHeader, encryptedImg.ToArray());
+            stream = new MemoryStream(image);
+            EncryptedPicBox.Image = Image.FromStream(stream);
+            stream.Close(); // Releas any resources.
+        }
+
+        private void OFBBtn_Click(object sender, EventArgs e)
+        {
+            if (OriginalPicBox.Image == null)
+            {
+                MessageBox.Show("Plz select and bitmap gray image");
+                return;
+            }
+            OFBMode();
         }
 
     } // end of class.
