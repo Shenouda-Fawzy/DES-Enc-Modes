@@ -206,7 +206,6 @@ namespace Cipher_Modes
             List<byte> encryptedImg = new List<byte>(imageData.Length + padding);
 
             int j = 0;
-            byte[] buffer = new byte[8];
             long counter = 0;
             byte[] cntr = BitConverter.GetBytes(counter);
 // Step 2,3:
@@ -215,7 +214,6 @@ namespace Cipher_Modes
                 dataBlock[j] = imageData[i];
                 if (i % 7 == 0 && i != 0) 
                 {
-                    des.IV = cntr;
                     counter++;
                     cntr = BitConverter.GetBytes(counter);
                     byte[] encryptedCounter = cryptor.TransformFinalBlock(cntr, 0, cntr.Length);
@@ -269,18 +267,20 @@ namespace Cipher_Modes
             byte[] dataBlock = new byte[8]; // 64-bit block
             byte[] encryptedBlock = new byte[8]; // after encrypting the data.
 
-            int padding = 0;
+            int padding = 0; // This because if the image data can not be devied to 8-byte block each.
             if (dataBlock.Length % 8 != 0)
                 padding = 8 - (dataBlock.Length % 8);
             List<byte> encryptedImg = new List<byte>(imageData.Length + padding);
 
-            byte[] IV = generateIV();
+            byte[] IV = generateIV(); // get iv to be encrypted as first.
             ICryptoTransform cryptor = des.CreateEncryptor(this.key, null);
 
-// Encrypt first block of data.
+// Encrypt first block(IV) of data.
             byte[] firstBlock = cryptor.TransformFinalBlock(IV, 0, IV.Length);
             long firstB = BitConverter.ToInt64(firstBlock,0);
-            byte[] fristImgeDataBlock = stream.ToArray().Take(8).ToArray();
+
+            byte[] fristImgeDataBlock = new byte[8];
+            Array.Copy(imageData, fristImgeDataBlock, 8); // Copy the first 8-byte block.
             long firstImgB = BitConverter.ToInt64(fristImgeDataBlock, 0);
             long firstEncBlock = firstB ^ firstImgB;
             byte[] firstEncryptedBlock = BitConverter.GetBytes(firstEncBlock);
@@ -290,23 +290,23 @@ namespace Cipher_Modes
 
             int j = 0;
             byte[] encBlock = firstBlock;
-            for (uint i = 8; i < imageData.Length - 8; i++)
+            for (uint i = 8; i < imageData.Length - 8; i++) // Start with 8 because the 1st block already encrypted.
             {
-                dataBlock[j] = imageData[i];
+                dataBlock[j] = imageData[i]; // Collect 8 byte block 
                 
-                if (i % 7 == 0)
+                if (i % 7 == 0) // Encrypt each block.
                 {
                     long dataBlk = BitConverter.ToInt64(dataBlock, 0);
-                    cryptor.TransformBlock(encBlock, 0, encBlock.Length, encBlock, 0);
+                    cryptor.TransformBlock(encBlock, 0, encBlock.Length, encBlock, 0); // This block is encrypted every time.
                     long encryptedPrivBlock = BitConverter.ToInt64(encBlock , 0);
-                    long encryptedImageBlock = encryptedPrivBlock ^ dataBlk;
-                    byte[] encryptedDataBlock = BitConverter.GetBytes(encryptedImageBlock);
-                    encryptedImg.AddRange(encryptedDataBlock);
+                    long encryptedImageBlock = encryptedPrivBlock ^ dataBlk; // XOR the ENC(IV[PreivieusBlock] , KEY) with the Image block
+                    byte[] encryptedDataBlock = BitConverter.GetBytes(encryptedImageBlock);// Converte it to bytes.
+                    encryptedImg.AddRange(encryptedDataBlock); // Add that encrypted block to the other encrypted part of the Image.
                     j = 0;
                 }
                 j++;
             } // end of loop
-            byte[] image = Combine(imageHeader, encryptedImg.ToArray());
+            byte[] image = Combine(imageHeader, encryptedImg.ToArray()); // But the header back the the encrypted data.
             stream = new MemoryStream(image);
             EncryptedPicBox.Image = Image.FromStream(stream);
             stream.Close(); // Releas any resources.
